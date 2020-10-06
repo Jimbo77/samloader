@@ -60,6 +60,7 @@ def checkupdate_function(model, region):
         print("Model {} not found in region {}.".format(model, region))
         sys.exit(1)
     print(fw)
+    return fw
 
 @cli.command(help="Download the specified firmware version.")
 @click.argument("version")
@@ -140,6 +141,13 @@ def mkfw(version, model, region, outfile):
     else:
         decrypt2_function(version, model, region, infile, outfile)
     os.remove(infile)
+
+@cli.command(help="Fetch and decrypt latest firmware file.")
+@click.argument("model")
+@click.argument("region")
+def latest(model, region):
+    version = checkupdate_function(model, region)
+    mkfw((version, model, region))
 
 @cli.command(help="Decrypt enc2 files.")
 @click.argument("version")
