@@ -16,10 +16,8 @@ from . import versionfetch
 def getbinaryfile(client, fw, region, model):
     fw = fw.upper()
     region = region.upper()
-    model = model.upper()
+    model = normalise(model)
 
-    if model[0:3] != 'SM-':
-        model = 'SM-' + model
     try:
         req = request.binaryinform(fw, region, model, client.nonce)
         resp = client.makereq("NF_DownloadBinaryInform.do", req)
@@ -38,6 +36,12 @@ def initdownload(client, filename):
     req = request.binaryinit(filename, client.nonce)
     resp = client.makereq("NF_DownloadBinaryInitForMass.do", req)
 
+def normalise(model):
+    model = model.upper()
+    if model[0:3] != 'SM-':
+        model = 'SM-' + model
+    return model
+
 @click.group()
 def cli():
     pass
@@ -50,10 +54,8 @@ def checkupdate(model, region):
 
 def checkupdate_function(model, region):
     region = region.upper()
-    model = model.upper()
+    model = normalise(model)
 
-    if model[0:3] != 'SM-':
-        model = 'SM-' + model
     try:
         fw = versionfetch.getlatestver(region, model)
     except:
@@ -114,10 +116,7 @@ def decrypt4(version, model, region, infile, outfile):
 
 def decrypt4_function(version, model, region, infile, outfile):
     region = region.upper()
-    model = model.upper()
-
-    if model[0:3] != 'SM-':
-        model = 'SM-' + model
+    model = normalise(model)
 
     key = crypt.getv4key(version, model, region)
     print("Decrypting with key {}...".format(key.hex()))
@@ -160,10 +159,7 @@ def decrypt2(version, model, region, infile, outfile):
 
 def decrypt2_function(version, model, region, infile, outfile):
     region = region.upper()
-    model = model.upper()
-
-    if model[0:3] != 'SM-':
-        model = 'SM-' + model
+    model = normalise(model)
 
     key = crypt.getv2key(version, model, region)
     print("Decrypting with key {}...".format(key.hex()))
